@@ -8,6 +8,7 @@ import SignUpDto from './dto/signUp.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import LoginDto from './dto/login.dto';
+import { Role } from './schemas/role';
 
 @Injectable()
 export class AuthService {
@@ -23,11 +24,24 @@ export class AuthService {
   }
 
   // register new user
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUpUser(signUpDto: SignUpDto): Promise<{ token: string }> {
     const encryptedPassword = await bcrypt.hash(signUpDto.password, 10);
 
     const createdUser = await this.userModel.create({
       ...signUpDto,
+      role: Role.USER,
+      password: encryptedPassword,
+    });
+
+    return { token: this.jwtService.sign({ id: createdUser._id }) };
+  }
+
+  async signUpAdmin(signUpDto: SignUpDto): Promise<{ token: string }> {
+    const encryptedPassword = await bcrypt.hash(signUpDto.password, 10);
+
+    const createdUser = await this.userModel.create({
+      ...signUpDto,
+      role: Role.ADMIN,
       password: encryptedPassword,
     });
 
@@ -35,7 +49,7 @@ export class AuthService {
   }
 
   // login user
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
+  async login(loginDto: LoginDto): Promise<{ token: string; role: string }> {
     const user = await this.userModel.findOne({ email: loginDto.email });
 
     if (!user) {
@@ -55,6 +69,7 @@ export class AuthService {
 
     return {
       token: await this.jwtService.signAsync(payload),
+      role: user?.role,
     };
   }
 }

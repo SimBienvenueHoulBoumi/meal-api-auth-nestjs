@@ -21,13 +21,22 @@ import { User } from './schemas/user.schema';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signup')
+  @Post('/signup-user')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Register new user',
   })
-  async signUp(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
-    return this.authService.signUp(signUpDto);
+  async signUpUser(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
+    return this.authService.signUpUser(signUpDto);
+  }
+
+  @Post('/signup-admin')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Register new admin',
+  })
+  async signUpAdmin(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
+    return this.authService.signUpAdmin(signUpDto);
   }
 
   @Post('/login')
