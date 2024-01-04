@@ -72,4 +72,6 @@ export class AuthService {
       role: user?.role,
     };
   }
+
+  // logout session
 }
