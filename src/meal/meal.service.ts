@@ -11,8 +11,7 @@ export class MealService {
   constructor(@InjectModel(Meal.name) private mealModel: Model<Meal>) {}
 
   create(createMealDto: CreateMealDto): Promise<Meal> {
-    const createdCat = new this.mealModel(createMealDto);
-    return createdCat.save();
+    return new this.mealModel(createMealDto).save();
   }
 
   findAll(): Promise<Meal[]> {
